@@ -1,16 +1,16 @@
-#
+# VERSIONS
 
 Node Version => 10.24.1
+Redis => 6.0.16
 
-##
+// firebase.js
+const admin = require('firebase-admin');
+const serviceAccount = require('../../serviceAccountKey.json');
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
-Todo => notification work to do
+module.exports = admin;
 
-/\* 
-    1. Fetch user details
-    2.Loop over it
-    3.Insert payload in Appnotification collection
-    4.per user =>userDevices
-    5.loop + firebase notif send(payload)
-
-*/

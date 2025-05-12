@@ -1,22 +1,26 @@
-require('dotenv').config();
+require("dotenv").config();
+const cors = require("cors");
 const express = require("express");
+
+const socketService = require("./config/socketConfig");
 const connectDb = require("./config/dbConnect");
 const { callRespectiveJobs } = require("./utils/workerMethods");
-const { getQueueInstance } = require("./utils/myQueue");
-const app = express();
-const port = process.env.PORT;
-let db = null;
-const myQueue = getQueueInstance();
+const { getQueueInstance } = require("./utils/notificationQueue");
 
-connectDb().then((value) => {
-  console.log("🚀 ~ connectDb ~ value:", value);
-  db = value;
-  myQueue.process(async (job) => {
-    callRespectiveJobs(job, db)
-  })
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const { PORT } = require("./config/constants");
+const notificationQueue = getQueueInstance();
+
+socketService.connect();
+
+connectDb().then((db) => {
+  notificationQueue.process(async (job) => {
+    await callRespectiveJobs(job, db);
+  });
+  app.listen(PORT, () => {
+    console.log(`Server  listening on port ${PORT} ...`);
   });
 });
-
-

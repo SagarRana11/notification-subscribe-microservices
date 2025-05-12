@@ -1,13 +1,19 @@
 const { ObjectId } = require("mongodb");
-const { getNotificationModel } = require("../model/notification.model");
 
-const insertAppNotificationData = async (payload, db) => {
-  const appUserNotiicationModel = getNotificationModel(db);
+const { getRespectiveModel } = require("../utils/dbHelpers");
+const { APP_NOTIFICATIONS } = require("../model/collectionsName");
 
-  const result = await appUserNotiicationModel.insert({
-    payload,
+const insertAppNotificationData = async (payload, db, userDetails) => {
+  const appUserNotificationModel = getRespectiveModel(db, APP_NOTIFICATIONS);
+
+  const result = await appUserNotificationModel.insertOne({
+    ...payload,
+    read: false,
+    _createdOn: new Date(),
+    _createdBy: { _id: new ObjectId(userDetails._id) },
+    __txs__: {},
   });
-  return result.ops[0];
+  return result && result.ops && result.ops[0];
 };
 
 module.exports = { insertAppNotificationData };

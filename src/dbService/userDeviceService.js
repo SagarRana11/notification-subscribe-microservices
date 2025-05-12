@@ -1,12 +1,17 @@
-const {ObjectId} = require('mongodb');
-const { getDeviceModel } = require('../model/device.model');
-const getUserDevices = async ( userId, db ) => {
-  const appUserDeviceModel = getDeviceModel(db);
+const { ObjectId } = require("mongodb");
 
-  const devices = await appUserDeviceModel.findOne({
+const { getRespectiveModel } = require("../utils/dbHelpers");
+const { APP_USER_DEVICES } = require("../model/collectionsName");
+
+const getUserDevices = async (userId, db) => {
+  const appUserDeviceModel = getRespectiveModel(db, APP_USER_DEVICES);
+
+  const cursor = await appUserDeviceModel.find({
     "user._id": new ObjectId(userId),
   });
-  return devices;
+
+  const devices = await cursor.toArray();
+  return devices && devices;
 };
 
-module.exports = {getUserDevices}
+module.exports = { getUserDevices };

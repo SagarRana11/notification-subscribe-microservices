@@ -1,6 +1,4 @@
-const {notificationService} = require('./notificationService')
+const { notificationService } = require("./notification");
 module.exports = {
   notification: notificationService,
-  job2: () => {},
-
 };

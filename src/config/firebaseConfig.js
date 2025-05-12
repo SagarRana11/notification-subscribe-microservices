@@ -1,11 +1,22 @@
-const admin = require('firebase-admin')
-const projectId = process.env.PROJECT_ID 
-const serviceAccountId = process.env.SERVICE_ACCOUNT_ID;
-const serviceAccount = require('../../serviceAccountKey.json')
-let firebaseAdminApp = admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  projectId: projectId,
-  serviceAccountId: serviceAccountId,
-});
+const admin = require("firebase-admin");
 
-module.exports ={firebaseAdminApp}
+const { PROJECT_ID, SERVICE_ACCOUNT_ID } = require("./constants");
+const serviceAccount = require("../../serviceAccountKey.json");
+
+class ConnectFirebase {
+  constructor() {
+    if (ConnectFirebase.instance) return ConnectFirebase.instance;
+    this.firebaseInstance = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      projectId: PROJECT_ID,
+      serviceAccountId: SERVICE_ACCOUNT_ID,
+    });
+
+    ConnectFirebase.instance = this;
+    return this;
+  }
+}
+
+const adminApp = new ConnectFirebase();
+
+module.exports = adminApp.firebaseInstance;
